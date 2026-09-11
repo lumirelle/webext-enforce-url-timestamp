@@ -7,6 +7,11 @@ settings:
 overrides:
   typescript: npm:typescript-native-bridge@^6.0.3-bridge.16.tsgo.7.0.2
 
+patchedDependencies:
+  chrome-launcher@1.2.0:
+    hash: 27b144981695fa7c130272978cfbd0c4ceb29b810c1a74c9d54e0a626cf96f5a
+    path: patches/chrome-launcher@1.2.0.patch
+
 importers:
 
   .:
@@ -5494,7 +5499,7 @@ snapshots:
     dependencies:
       readdirp: 5.1.1
 
-  chrome-launcher@1.2.0:
+  chrome-launcher@1.2.0(patch_hash=27b144981695fa7c130272978cfbd0c4ceb29b810c1a74c9d54e0a626cf96f5a):
     dependencies:
       '@types/node': 22.20.2
       escape-string-regexp: 4.0.0
@@ -8030,7 +8035,7 @@ snapshots:
       '@devicefarmer/adbkit': 3.3.9
       addons-linter: 10.10.0(jiti@2.7.0)
       camelcase: 8.0.0
-      chrome-launcher: 1.2.0
+      chrome-launcher: 1.2.0(patch_hash=27b144981695fa7c130272978cfbd0c4ceb29b810c1a74c9d54e0a626cf96f5a)
       debounce: 1.2.1
       decamelize: 6.0.1
       es6-error: 4.1.1

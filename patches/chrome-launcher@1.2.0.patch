@@ -1,0 +1,18 @@
+diff --git a/dist/chrome-launcher.js b/dist/chrome-launcher.js
+--- a/dist/chrome-launcher.js
++++ b/dist/chrome-launcher.js
+@@ -116,8 +116,12 @@
+         }
+         if (!this.useDefaultProfile) {
+             // Place Chrome profile in a custom location we'll rm -rf later
+-            // If in WSL, we need to use the Windows format
+-            flags.push(`--user-data-dir=${isWsl ? toWin32Path(this.userDataDir) : this.userDataDir}`);
++            // If in WSL, we need to use the Windows format -- but only when the
++            // browser we are about to launch is actually a Windows binary.
++            // A Linux chromium under WSL resolves the UNC path relative to cwd
++            // and creates a stray `\\wsl.localhost\...` directory.
++            const isWindowsBrowser = isWsl && /\.exe$/i.test(this.chromePath || '');
++            flags.push(`--user-data-dir=${isWindowsBrowser ? toWin32Path(this.userDataDir) : this.userDataDir}`);
+         }
+         if (process.env.HEADLESS)
+             flags.push('--headless');

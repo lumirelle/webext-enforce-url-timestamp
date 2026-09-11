@@ -54,5 +54,8 @@
       "version": "^0.7.5",
       "onFail": "ignore"
     }
+  },
+  "patchedDependencies": {
+    "chrome-launcher@1.2.0": "patches/chrome-launcher@1.2.0.patch"
   }
 }
