@@ -1,5 +1,23 @@
+<script setup lang="ts">
+import logo from '~/assets/logo.svg'
+
+withDefaults(defineProps<{ size?: number }>(), { size: 48 })
+</script>
+
 <template>
-  <a class="icon-btn mx-2 text-2xl" rel="noreferrer" href="https://github.com/lumirelle/starter-webext" target="_blank" title="GitHub">
-    <pixelarticons-power />
+  <a
+    class="inline-block cursor-pointer select-none transition duration-200 ease-in-out opacity-90 hover:opacity-100"
+    rel="noreferrer"
+    href="https://github.com/lumirelle/webext-enforce-url-timestamp"
+    target="_blank"
+    title="时印 TimeSeal · GitHub"
+  >
+    <img
+      :src="logo"
+      alt="时印 TimeSeal"
+      :width="size"
+      :height="size"
+      class="rounded-lg"
+    >
   </a>
 </template>

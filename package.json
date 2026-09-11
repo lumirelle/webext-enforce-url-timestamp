@@ -1,11 +1,11 @@
 {
-  "name": "starter-webext",
-  "displayName": "Starter WebExt",
+  "name": "time-seal",
+  "displayName": "时印 TimeSeal",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "packageManager": "nub@0.7.5",
-  "description": "_description_",
+  "description": "给命中的 URL 强制追加 ?t= 时间戳，绕过浏览器与 CDN 缓存，永远加载最新页面。",
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
     "@ffflorian/jszip-cli": "^3.16.5",

@@ -1,153 +1,137 @@
-# Starter WebExt
+<div align="center">
 
-A [Vite](https://vitejs.dev/) powered WebExtension ([Chrome](https://developer.chrome.com/docs/extensions/reference/), [FireFox](https://addons.mozilla.org/en-US/developers/), etc.) starter template.
+<img src="./extension/assets/icon-512.png" width="112" alt="时印 TimeSeal">
 
-<p align="center">
-<sub>Popup</sub><br/>
-<img width="655" src="https://user-images.githubusercontent.com/11247099/126741643-813b3773-17ff-4281-9737-f319e00feddc.png" alt=""><br/>
-<sub>Options Page</sub><br/>
-<img width="655" src="https://user-images.githubusercontent.com/11247099/126741653-43125b62-6578-4452-83a7-bee19be2eaa2.png" alt=""><br/>
-<sub>Inject Vue App into the Content Script</sub><br/>
-<img src="https://user-images.githubusercontent.com/11247099/130695439-52418cf0-e186-4085-8e19-23fe808a274e.png" alt="">
-</p>
+# 时印 TimeSeal
 
-## Features
+**给 URL 盖上此刻的时间戳，永远加载最新页面。**
 
-- ⚡️ **Instant HMR** - use **Vite** on dev (no more refresh!)
-- 🥝 Vue 3 - Composition API, [`<script setup>` syntax](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0040-script-setup.md) and more!
-- 💬 Effortless communications - powered by [`webext-bridge`](https://github.com/serversideup/webext-bridge) and [VueUse](https://github.com/antfu/vueuse) storage
-- 🌈 [UnoCSS](https://github.com/unocss/unocss) - The instant on-demand Atomic CSS engine.
-- 🦾 [TypeScript](https://www.typescriptlang.org/) - type safe
-- 📦 [Components auto importing](./src/components)
-- 🌟 [Icons](./src/components) - Access to icons from any iconset directly
-- 🖥 Content Script - Use Vue even in content script
-- 🌍 WebExtension - isomorphic extension for Chrome, Firefox, and others
-- 📃 Dynamic `manifest.json` with full type support
+命中域名的页面在导航前被强制改写为 `?t=<当前毫秒时间戳>`，
+绕过浏览器与 CDN 缓存，让你始终拿到最新内容。
 
-## Pre-packed
+[![Chrome](https://img.shields.io/badge/Chrome-MV3-2D8B8B?logo=googlechrome&logoColor=white)](#安装)
+[![Firefox](https://img.shields.io/badge/Firefox-MV3-2D8B8B?logo=firefoxbrowser&logoColor=white)](#安装)
+[![MIT](https://img.shields.io/badge/License-MIT-1A2332.svg)](./LICENSE)
 
-### WebExtension Libraries
+<img src="./store/screenshot-1-hero.png" width="880" alt="时印 TimeSeal 主视觉">
 
-- [`webextension-polyfill`](https://github.com/mozilla/webextension-polyfill) - WebExtension browser API Polyfill with types
-- [`webext-bridge`](https://github.com/serversideup/webext-bridge) - effortlessly communication between contexts
+</div>
 
-### Vite Plugins
+## 它解决什么问题
 
-- [`unplugin-auto-import`](https://github.com/unplugin/unplugin-auto-import) - Directly use `browser` and Vue Composition API without importing
-- [`unplugin-vue-components`](https://github.com/unplugin/unplugin-vue-components) - components auto import
-- [`unplugin-icons`](https://github.com/unplugin/unplugin-icons) - icons as components
-  - [Iconify](https://iconify.design) - use icons from any icon sets [🔍Icônes](https://icones.netlify.app/)
+开发调试或内容运维时，经常遇到「页面/接口明明更新了，浏览器或 CDN 却还在返回旧内容」。
+手动在地址栏补 `?t=123456` 很麻烦，而且下一次跳转又被缓存。
 
-### Vue Plugins
+**时印**把这件事自动化：给需要保鲜的域名配一条正则，之后每次导航都会自动追加当前时间戳，
+缓存自然失效。
 
-- [VueUse](https://github.com/antfu/vueuse) - collection of useful composition APIs
+## 功能
 
-### UI Frameworks
+- ⏱ **导航前强制追加时间戳** —— 借助 `webNavigation.onBeforeNavigate`，主框架导航前就把 URL
+  改写为 `?t=<毫秒时间戳>`，页面还没开始加载缓存就已失效。
+- 🎯 **按域名正则匹配** —— 对 `hostname` 做正则匹配，例如 `.*\.example\.com` 命中所有子域；
+  只影响你指定的站点，其他网站零打扰。
+- 🔁 **不会死循环** —— 已带 `t` 参数的 URL 直接跳过，避免重定向循环。
+- 🎚 **一键总开关** —— 弹窗/Sidepanel 里有开关，也可以录制一个全局组合键（如 `Ctrl+Shift+T`），
+  在任意网页上随时切换，右上角浮出状态提示。
+- 💾 **自动保存** —— 配置存于 `browser.storage`，跨设备（登录同步时）保留。
+- 🌍 **Chromium 与 Firefox 通用** —— 同一份代码，MV3。
 
-- [UnoCSS](https://github.com/unocss/unocss) - the instant on-demand Atomic CSS engine
+<div align="center">
+<img src="./store/screenshot-2-domains.png" width="640" alt="域名正则配置">
+<img src="./store/screenshot-3-shortcut.png" width="640" alt="快捷键开关">
+</div>
 
-### Coding Style
+## 安装
 
-- Use Composition API with [`<script setup>` SFC syntax](https://github.com/vuejs/rfcs/pull/227)
-- [ESLint](https://eslint.org/) with [@antfu/eslint-config](https://github.com/antfu/eslint-config), single quotes, no semi
-- [oxlint](https://oxc.rs/) type-aware rules via [@lumirelle/oxlint-config](https://github.com/lumirelle/oxlint-config)
+### 商店
 
-### Dev tools
+> 上架后在此补充 Chrome Web Store / Firefox Add-ons 链接。
 
-- [mise](https://mise.jdx.dev/) - toolchain manager and task runner
-- [nub](https://nubjs.com/) - fast Node.js package manager
-- [hk](https://github.com/jdx/hk) - git hooks and lint runner
-- [TypeScript](https://www.typescriptlang.org/)
-- [web-ext](https://github.com/mozilla/web-ext) - streamlined experience for developing web extensions
-
-## Use the Template
-
-### GitHub Template
-
-[Create a repo from this template on GitHub](https://github.com/lumirelle/starter-webext/generate).
-
-### Clone to local
-
-If you prefer to do it manually with the cleaner git history:
+### 从源码加载（开发者模式）
 
 ```bash
-npx degit lumirelle/starter-webext my-webext
-cd my-webext
+git clone https://github.com/lumirelle/webext-enforce-url-timestamp
+cd webext-enforce-url-timestamp
 mise install
-mise run build
+mise run build            # Chromium；Firefox 用 mise run build firefox
 ```
 
-[mise](https://mise.jdx.dev/) installs the pinned toolchain, and the Node.js dependencies are installed through [nub](https://nubjs.com/) as part of `mise run` (see `[deps.nub]` in `mise.toml`).
+- **Chrome / Edge**：打开 `chrome://extensions`，开启「开发者模式」，选择「加载已解压的扩展程序」，
+  指向本仓库的 `extension/` 目录。
+- **Firefox**：打开 `about:debugging#/runtime/this-firefox`，「临时载入附加组件」，
+  选择 `extension/manifest.json`。
 
-## Usage
+## 使用
 
-### Folders
+1. 点击工具栏里的时印图标，选择「打开设置」。
+2. 在 **域名正则** 里填入需要保鲜的域名，例如：
+   - `^api\.example\.com$` —— 精确匹配
+   - `.*\.example\.com` —— 匹配所有子域
+   - `localhost:\d+` —— 注意：正则作用于 `hostname`，不含端口
+3. 页面命中规则后，导航会自动变成 `https://api.example.com/v1/users?t=1735689600000`。
+4. 想临时关掉时，用弹窗里的开关，或在设置页录制一个 **开关切换快捷键**。
 
-- `src` - main source.
-  - `contentScript` - scripts and components to be injected as `content_script`
-  - `background` - scripts for background.
-  - `components` - auto-imported Vue components that are shared in popup and options page.
-  - `styles` - styles shared in popup and options page
-  - `assets` - assets used in Vue components
-  - `manifest.ts` - manifest for the extension.
-- `extension` - extension package root.
-  - `assets` - static assets (mainly for `manifest.json`).
-  - `dist` - built files, also serve stub entry for Vite on development.
-- `scripts` - development and bundling helper scripts.
+> `t` 参数名固定；已带 `t` 的 URL 不会被再次改写。
 
-### Development
+## 工作原理
+
+```
+webNavigation.onBeforeNavigate (frameId === 0)
+        │
+        ├─ 跳过浏览器内部页 / 商店页
+        ├─ 等待 storage 就绪
+        ├─ 总开关关闭？→ 结束
+        ├─ hostname 命中任一正则？
+        └─ 未带 t 参数？→ tabs.update(追加 ?t=Date.now())
+```
+
+核心改写逻辑是纯函数 `appendTimestamp()`（`src/logic/timestamp.ts`），不依赖浏览器 API，
+因此可以完整单测。
+
+## 开发
+
+项目使用 [mise](https://mise.jdx.dev/) 管理工具链与任务、[nub](https://nubjs.com/) 安装依赖。
 
 ```bash
-mise run dev            # Chromium (default)
-mise run dev firefox    # Firefox
+mise run dev              # 开发（Chromium，带 HMR）
+mise run dev firefox      # 开发（Firefox）
+
+mise run build            # 构建（Chromium）
+mise run build firefox    # 构建（Firefox）
+mise run pack             # 打包成 extension.zip / .crx / .xpi
+
+mise run check            # oxlint + tsc + eslint + stylua + pkl
+mise run fix              # 自动修复
+mise run test             # Vitest 单元测试
+mise run test:e2e         # Playwright 端到端测试
+
+nub scripts/store-assets.ts   # 重新生成 store/ 商店素材（需先 build）
 ```
 
-Then **load extension in browser with the `extension/` folder**.
+### 目录结构
 
-`web-ext` can also run the extension for you, reloading it whenever `extension/` changes:
-
-```bash
-mise run start chromium
-mise run start firefox-desktop
+```
+src/
+├── background/        # service worker：导航改写 + 快捷键消息
+├── contentScripts/    # 页面内快捷键监听 + toast
+├── options/           # 设置页（域名正则、快捷键录制）
+├── popup/             # 工具栏弹窗
+├── sidepanel/         # 侧边栏面板
+├── logic/             # 纯逻辑：timestamp / shortcut / storage
+├── components/        # 自动导入的共享组件
+└── manifest.ts        # 动态生成 manifest.json
+extension/             # 扩展包根目录（assets + dist）
+scripts/               # 构建、manifest、商店素材脚本
+store/                 # 生成好的商店图片
+docs/brand.md          # 品牌规范（配色 / 图标 / 素材）
 ```
 
-`start` runs whatever is currently in `extension/`, so it must match the browser you
-built for (`dev`/`build` default to Chromium). A mismatch is detected and reported.
+## 技术栈
 
-> While Vite handles HMR automatically in the most of the case, [Extensions Reloader](https://chromewebstore.google.com/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid) is still recommended for cleaner hard reloading.
+Vite · Vue 3 · TypeScript · UnoCSS · webext-bridge · webextension-polyfill ·
+Vitest · Playwright。模板基于 [starter-webext](https://github.com/lumirelle/starter-webext)。
 
-### Build
+## License
 
-To build the extension, run:
-
-```bash
-mise run build          # Chromium (default)
-mise run build firefox  # Firefox
-```
-
-Then pack the files under `extension` into the store artifacts:
-
-```bash
-mise run pack   # produces extension.zip, extension.crx and extension.xpi
-```
-
-You can upload `extension.crx` or `extension.xpi` to the appropriate extension store.
-
-### Checks and tests
-
-```bash
-mise run check      # oxlint, tsc, eslint, stylua and pkl
-mise run fix        # auto-fix everything that can be fixed
-mise run test       # unit tests with Vitest
-mise run test:e2e   # end-to-end tests with Playwright
-```
-
-## Using Gitpod
-
-If you have a web browser, you can get a fully pre-configured development environment with one click:
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/lumirelle/starter-webext)
-
-## Variations
-
-This is a variant of [Vitesse](https://github.com/antfu/vitesse), check out the [full variations list](https://github.com/antfu/vitesse#variations).
+[MIT](./LICENSE)

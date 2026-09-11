@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="seal-bg-sm" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3AA6A6"/>
+      <stop offset="1" stop-color="#1C6060"/>
+    </linearGradient>
+  </defs>
+
+  <!-- small-size variant: no perforation ring, bolder clock for 16/32px legibility -->
+  <rect width="512" height="512" rx="116" fill="url(#seal-bg-sm)"/>
+  <circle cx="256" cy="256" r="176" fill="#F1FAEE"/>
+
+  <g stroke="#2D8B8B" stroke-width="26" stroke-linecap="round">
+    <line x1="256" y1="118" x2="256" y2="156"/>
+    <line x1="394" y1="256" x2="356" y2="256"/>
+    <line x1="256" y1="394" x2="256" y2="356"/>
+    <line x1="118" y1="256" x2="156" y2="256"/>
+  </g>
+
+  <g stroke="#1A2332" stroke-linecap="round">
+    <line x1="256" y1="256" x2="256" y2="168" stroke-width="34"/>
+    <line x1="256" y1="256" x2="340" y2="256" stroke-width="34"/>
+  </g>
+  <circle cx="256" cy="256" r="24" fill="#1A2332"/>
+</svg>

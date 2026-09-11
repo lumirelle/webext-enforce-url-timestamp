@@ -55,11 +55,11 @@ window.addEventListener(
     void (async () => {
       try {
         const enabled = await sendMessage('toggle-enabled', null)
-        showToast(enabled ? 'URL 时间戳已开启' : 'URL 时间戳已关闭')
+        showToast(enabled ? '时印 · 时间戳已开启' : '时印 · 时间戳已关闭')
       }
       catch (err) {
         // oxlint-disable-next-line no-console
-        console.error('[url-timestamp] toggle failed', err)
+        console.error('[time-seal] toggle failed', err)
       }
     })()
   },

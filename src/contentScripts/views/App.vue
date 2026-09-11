@@ -16,13 +16,13 @@ const [show, toggle] = useToggle(false)
       :class="show ? 'opacity-100' : 'opacity-0'"
     >
       <h1 class="text-lg">
-        Starter WebExt
+        时印 TimeSeal
       </h1>
       <SharedSubtitle />
     </div>
     <button
       class="flex w-10 h-10 rounded-full shadow cursor-pointer border-none"
-      bg="teal-600 hover:teal-700"
+      bg="brand-600 hover:brand-700"
       @click="toggle()"
     >
       <pixelarticons-power class="block m-auto text-white text-lg" />

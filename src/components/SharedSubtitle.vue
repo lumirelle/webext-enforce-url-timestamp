@@ -1,5 +1,5 @@
 <template>
   <p class="mt-2 opacity-50">
-    This is the {{ $app.context }} page
+    让 URL 永远保持新鲜
   </p>
 </template>
