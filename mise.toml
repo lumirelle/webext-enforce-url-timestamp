@@ -1,0 +1,158 @@
+#:schema https://mise.jdx.dev/schema/mise.json
+
+[tools]
+# Environments
+node = "latest"
+"github:nubjs/nub" = "latest"
+# Linters & Formatters
+# pinned to match the `amends` version in hk.pkl
+hk = "1.58.1"
+stylua = "latest"
+pkl = "latest"
+
+[deps.nub]
+description = 'Automatically install Node.js dependencies via nub.'
+sources = ['package.json', 'nub.lock']
+outputs = ['node_modules/']
+run = 'nub pm pin && nub install'
+auto = true
+
+[env]
+_.path = ['{{config_root}}/node_modules/.bin']
+
+[task_config.input_groups]
+deps = ["package.json", "nub.lock"]
+src = ["src"]
+build = ["scripts", "vite.config*.ts", "unocss.config.ts", "tsconfig*.json"]
+check = ["*.js", "*.mjs", "*.cjs", "*.jsx", "*.ts", "*.mts", "*.cts", "*.tsx", "*.json", "*.jsonc", "*.yaml", "*.yml", "*.toml", "*.md", "*.mdc", "*.mdx", "*.lua", "hk.pkl"]
+e2e = ["e2e", "playwright.config.ts"]
+
+[tasks.clear]
+description = "Clear dist files."
+run = "rm -rf extension/dist extension/manifest.json extension.*"
+
+[tasks.dev]
+description = "Run the development build with hot reloading."
+usage = '''
+arg "[browser]" help="Target browser, 'chromium' or 'firefox'." default="chromium"
+'''
+run = [{ task = "dev:*", env = { NODE_ENV = "development", EXTENSION = "{{ usage.browser }}" } }]
+depends = "clear"
+
+[tasks."dev:prepare"]
+run = "nub scripts/prepare.ts"
+
+[tasks."dev:background"]
+run = "mise run build:background -- --mode development"
+
+[tasks."dev:web"]
+run = "vite"
+
+[tasks."dev:js"]
+run = "mise run build:js -- --mode development"
+
+[tasks.build]
+description = "Run the production build."
+usage = '''
+arg "[browser]" help="Target browser, 'chromium' or 'firefox'." default="chromium"
+'''
+run = [
+  { task = "clear" },
+  { task = "build:web", env = { NODE_ENV = "production", EXTENSION = "{{ usage.browser }}" } },
+  { task = "build:prepare", env = { NODE_ENV = "production", EXTENSION = "{{ usage.browser }}" } },
+  { task = "build:background", env = { NODE_ENV = "production", EXTENSION = "{{ usage.browser }}" } },
+  { task = "build:js", env = { NODE_ENV = "production", EXTENSION = "{{ usage.browser }}" } },
+]
+# https://github.com/jdx/mise/pull/13051
+# sources = ["@group:deps", "@group:src", "@group:build"]
+# outputs = ["extension/dist", "extension/manifest.json"]
+# cache = { enabled = true }
+
+[tasks."build:prepare"]
+run = "nub scripts/prepare.ts"
+
+[tasks."build:background"]
+run = "vite build --config vite.config.background.ts"
+
+[tasks."build:web"]
+run = "vite build"
+
+[tasks."build:js"]
+run = "vite build --config vite.config.content.ts"
+
+[tasks.pack]
+env = { NODE_ENV = "production" }
+run = { task = "pack:*" }
+
+[tasks."pack:zip"]
+run = '''
+rm -f extension.zip
+jszip-cli add extension/* -o ./extension.zip
+'''
+
+[tasks."pack:crx"]
+run = "crx pack extension -o ./extension.crx"
+
+[tasks."pack:xpi"]
+env = { WEB_EXT_ARTIFACTS_DIR = "./" }
+run = "web-ext build --source-dir ./extension --filename extension.xpi --overwrite-dest"
+
+[tasks.start]
+description = "Run the source code."
+usage = '''
+arg "[browser]" help="Run on specific browser, 'chromium' or 'firefox-desktop'." default="chromium"
+arg "[rest]" var=#true help="Additional arguments to pass to the test runner"
+'''
+run = '''
+web-ext run --source-dir ./extension --target={{ usage.browser }} {{ usage.rest | join(sep=' ') if usage.rest else '' }}
+'''
+
+[tasks.check]
+description = 'Run all checks.'
+usage = '''
+flag "-s --staged" help="Run on staged files only without stashing unstaged changes"
+arg "[rest]" var=#true help="Additional arguments to pass to the test runner"
+'''
+run = '''
+hk check {{ "--staged" if usage.staged else "--all" }} {{ usage.rest | join(sep=' ') if usage.rest else '' }}
+'''
+sources = ["@group:deps", "@group:check"]
+outputs = []
+cache = { enabled = true, command_inputs = ["hk --version"] }
+
+[tasks.fix]
+description = 'Fix all check issues.'
+usage = '''
+flag "-s --staged" help="Run on staged files only without stashing unstaged changes"
+arg "[rest]" var=#true help="Additional arguments to pass to the test runner"
+'''
+run = '''
+hk fix {{ "--staged" if usage.staged else "--all" }} {{ usage.rest | join(sep=' ') if usage.rest else '' }}
+'''
+sources = ["@group:deps", "@group:check"]
+outputs = []
+cache = { enabled = true, command_inputs = ["hk --version"] }
+
+[tasks.test]
+description = "Run unit tests."
+usage = '''
+flag "-w --watch" help="Watch files for changes and rerun tests"
+arg "[rest]" var=#true help="Additional arguments to pass to the test runner"
+'''
+run = '''
+vitest {{ '' if usage.watch else 'run' }} {{ usage.rest | join(sep=' ') if usage.rest else '' }}
+'''
+sources = ["@group:deps", "@group:src"]
+outputs = []
+cache = { enabled = true, command_inputs = ["node --version"] }
+
+[tasks."test:e2e"]
+description = "Run end-to-end tests with Playwright."
+usage = '''
+arg "[rest]" var=#true help="Additional arguments to pass to Playwright"
+'''
+run = '''
+playwright test {{ usage.rest | join(sep=' ') if usage.rest else '' }}
+'''
+sources = ["@group:deps", "@group:src", "@group:build", "@group:e2e"]
+outputs = []

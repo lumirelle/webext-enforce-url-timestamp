@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "antfu.iconify",
+    "antfu.unocss",
+    "dbaeumer.vscode-eslint",
+    "oxc.oxc-vscode",
+    "csstools.postcss"
+  ]
+}

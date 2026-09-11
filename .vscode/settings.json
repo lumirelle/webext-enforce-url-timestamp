@@ -1,0 +1,26 @@
+{
+  "cSpell.words": ["UnoCSS", "WebExt", "mise", "nub", "oxlint", "stylua", "webext"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "vite.autoStart": false,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.fixAll.oxc": "always",
+    "source.organizeImports": "never"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "jsonc",
+    "yaml",
+    "toml",
+    "markdown"
+  ],
+  "files.associations": {
+    "*.css": "postcss",
+    "*.json": "jsonc"
+  }
+}

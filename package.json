@@ -1,0 +1,58 @@
+{
+  "name": "starter-webext",
+  "displayName": "Starter WebExt",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "nub@0.7.5",
+  "description": "_description_",
+  "devDependencies": {
+    "@antfu/eslint-config": "^9.5.1",
+    "@ffflorian/jszip-cli": "^3.16.5",
+    "@iconify/json": "^2.2.526",
+    "@lumirelle/oxlint-config": "^0.14.0",
+    "@lumirelle/tsconfig": "^0.1.6",
+    "@playwright/test": "^1.63.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.20.2",
+    "@types/webextension-polyfill": "^0.12.6",
+    "@unocss/reset": "^66.10.2",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/compiler-sfc": "^3.5.42",
+    "@vue/test-utils": "^2.5.0",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/shared": "^14.4.0",
+    "chokidar": "^5.0.0",
+    "crx": "^5.0.1",
+    "eslint": "^9.9.0",
+    "eslint-plugin-oxlint": "^1.82.0",
+    "fs-extra": "^11.4.0",
+    "jsdom": "^30.0.1",
+    "kolorist": "^1.8.0",
+    "oxlint": "^1.82.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "taze": "^21.1.0",
+    "typescript": "npm:typescript-native-bridge@^6.0.3-bridge.16.tsgo.7.0.2",
+    "unocss": "^66.10.2",
+    "unplugin-auto-import": "^21.1.0",
+    "unplugin-icons": "^23.0.1",
+    "unplugin-vue-components": "^32.1.0",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0",
+    "vue": "^3.5.42",
+    "vue-demi": "^0.14.10",
+    "web-ext": "^10.6.0",
+    "webext-bridge": "^6.0.1",
+    "webextension-polyfill": "^0.12.0"
+  },
+  "overrides": {
+    "typescript": "$typescript"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.7.5",
+      "onFail": "ignore"
+    }
+  }
+}

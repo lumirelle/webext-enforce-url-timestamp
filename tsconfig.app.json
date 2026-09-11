@@ -1,0 +1,13 @@
+{
+  "extends": "@lumirelle/tsconfig/vue",
+  "target": "es2016",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "paths": {
+      "~": ["./src"],
+      "~/*": ["./src/*"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*", "*.d.ts"]
+}
