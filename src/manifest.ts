@@ -44,8 +44,11 @@ export async function getManifest() {
       'tabs',
       'storage',
       'activeTab',
-      'sidePanel',
       'webNavigation',
+      // `sidePanel` is a Chromium-only permission and makes Firefox reject the
+      // manifest (web-ext lint: MANIFEST_PERMISSIONS). Firefox writes the
+      // sidebar through `sidebar_action` instead, which needs no permission.
+      ...(isFirefox ? [] : ['sidePanel'] as const),
     ],
     host_permissions: ['*://*/*'],
     content_scripts: [
@@ -71,6 +74,19 @@ export async function getManifest() {
   if (isFirefox) {
     manifest.sidebar_action = {
       default_panel: 'dist/sidepanel/index.html',
+    }
+
+    // Firefox MV3 refuses to load without an explicit ID, and AMO requires the
+    // data-collection declaration. Change the ID **before** the first AMO
+    // upload: it can never change afterwards for the same listing.
+    ;(manifest as any).browser_specific_settings = {
+      gecko: {
+        id: 'time-seal@lumirelle.github.io',
+        strict_min_version: '140.0',
+        data_collection_permissions: {
+          required: ['none'],
+        },
+      },
     }
   }
   else {

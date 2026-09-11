@@ -54,13 +54,27 @@
 git clone https://github.com/lumirelle/webext-enforce-url-timestamp
 cd webext-enforce-url-timestamp
 mise install
-mise run build            # Chromium；Firefox 用 mise run build firefox
+mise run build            # Chromium
+mise run build firefox    # Firefox
 ```
 
 - **Chrome / Edge**：打开 `chrome://extensions`，开启「开发者模式」，选择「加载已解压的扩展程序」，
   指向本仓库的 `extension/` 目录。
 - **Firefox**：打开 `about:debugging#/runtime/this-firefox`，「临时载入附加组件」，
   选择 `extension/manifest.json`。
+
+### 打包 / 签名（Firefox）
+
+```bash
+mise run pack firefox   # → extension.xpi（未签名）
+mise run pack           # → extension.zip / extension.crx（Chromium）
+mise run sign           # 上传 AMO 签名，需 WEB_EXT_API_KEY / WEB_EXT_API_SECRET
+```
+
+> Firefox 正式版只接受**已签名**的扩展；未签名的 xpi 会报
+> *“This add-on could not be installed because it appears to be corrupt.”*。
+> 另外注意：xpi 必须由 **firefox** 目标构建产出，Chromium 构建的 manifest 里是
+> `background.service_worker`，Firefox 同样拒绝。详见 [docs/signing.md](./docs/signing.md)。
 
 ## 使用
 

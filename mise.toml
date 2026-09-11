@@ -81,8 +81,24 @@ run = "vite build"
 run = "vite build --config vite.config.content.ts"
 
 [tasks.pack]
+description = "Build and package for a browser: chromium → zip/crx, firefox → xpi."
+usage = '''
+arg "[browser]" help="Target browser, 'chromium' or 'firefox'." default="chromium"
+'''
 env = { NODE_ENV = "production" }
-run = { task = "pack:*" }
+run = [
+  { task = "build", args = ["{{ usage.browser }}"] },
+  { task = "pack:{{ usage.browser }}" },
+]
+
+[tasks."pack:chromium"]
+run = [
+  { task = "pack:zip" },
+  { task = "pack:crx" },
+]
+
+[tasks."pack:firefox"]
+run = { task = "pack:xpi" }
 
 [tasks."pack:zip"]
 run = '''
@@ -94,8 +110,21 @@ jszip-cli add extension/* -o ./extension.zip
 run = "crx pack extension -o ./extension.crx"
 
 [tasks."pack:xpi"]
-env = { WEB_EXT_ARTIFACTS_DIR = "./" }
+description = "Package the Firefox build into an xpi (unsigned; see docs/signing.md)."
+env = { WEB_EXT_ARTIFACTS_DIR = "./", EXTENSION = "firefox" }
 run = "web-ext build --source-dir ./extension --filename extension.xpi --overwrite-dest"
+
+[tasks.sign]
+description = "Build for Firefox and sign it on AMO (unlisted). See docs/signing.md."
+env = { NODE_ENV = "production" }
+run = [
+  { task = "build", args = ["firefox"] },
+  { task = "sign:xpi" },
+]
+
+[tasks."sign:xpi"]
+env = { EXTENSION = "firefox" }
+run = "web-ext sign --source-dir ./extension --channel unlisted --artifacts-dir ./store/signed"
 
 [tasks.start]
 description = "Run the source code."
