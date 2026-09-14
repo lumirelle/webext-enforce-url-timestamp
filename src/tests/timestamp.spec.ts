@@ -14,12 +14,19 @@ describe('appendTimestamp', () => {
     expect(out).toBe('https://api.example.com/v1?a=1&t=1700000000000')
   })
 
-  it('未命中正则返回 null', () => {
+  it('未命中正则返回 null，即使已带 t', () => {
     expect(appendTimestamp('https://other.com/path', PATTERNS, 1)).toBeNull()
+    expect(appendTimestamp('https://other.com/path?t=123', PATTERNS, 1)).toBeNull()
   })
 
-  it('已带 t 参数返回 null（防循环）', () => {
-    expect(appendTimestamp('https://api.example.com/v1?t=123', PATTERNS, 1)).toBeNull()
+  it('已带 t 参数时用新时间戳覆盖（刷新 / 再次导航）', () => {
+    const out = appendTimestamp('https://api.example.com/v1?t=123', PATTERNS, 1700000000000)
+    expect(out).toBe('https://api.example.com/v1?t=1700000000000')
+  })
+
+  it('保留其它查询参数并覆盖 t', () => {
+    const out = appendTimestamp('https://api.example.com/v1?a=1&t=123&b=2', PATTERNS, 1700000000000)
+    expect(out).toBe('https://api.example.com/v1?a=1&t=1700000000000&b=2')
   })
 
   it('子域名通配正则命中', () => {

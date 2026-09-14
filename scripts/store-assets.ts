@@ -147,7 +147,7 @@ function domains(ui: Ui) {
           <div><span style="color:${C.teal};">✓</span> .*\\.test\\.org</div>
         </div>
         <div style="margin-top:14px;padding-top:14px;border-top:1px dashed #D5E4E4;font-size:15px;color:${C.muted};">
-          未命中的域名、已带 <span class="mono">t</span> 参数的 URL 一律不动 —— 不会造成重定向循环。
+          命中后每次导航都会覆盖为最新的 <span class="mono">t</span> —— 刷新也能拿到新内容，且不会重定向循环。
         </div>
       </div>
     </div>

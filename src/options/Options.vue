@@ -59,7 +59,7 @@ const shortcutDisplay = computed(() => {
     </header>
 
     <p class="text-sm text-gray-500 mb-6">
-      命中域名正则的页面，导航前会被强制跳转到追加了 <code class="bg-gray-100 px-1 rounded">?t=&lt;当前毫秒时间戳&gt;</code> 的 URL；已带 <code class="bg-gray-100 px-1 rounded">t</code> 参数的 URL 不处理。
+      命中域名正则的页面，每次导航前都会被强制跳转到带最新 <code class="bg-gray-100 px-1 rounded">?t=&lt;当前毫秒时间戳&gt;</code> 的 URL——刷新、前进/后退、再次点链接都会覆盖旧时间戳。
     </p>
 
     <!-- 总开关 -->

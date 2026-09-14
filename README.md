@@ -31,7 +31,8 @@
   改写为 `?t=<毫秒时间戳>`，页面还没开始加载缓存就已失效。
 - 🎯 **按域名正则匹配** —— 对 `hostname` 做正则匹配，例如 `.*\.example\.com` 命中所有子域；
   只影响你指定的站点，其他网站零打扰。
-- 🔁 **不会死循环** —— 已带 `t` 参数的 URL 直接跳过，避免重定向循环。
+- 🔁 **实时刷新、不会死循环** —— 每次导航（刷新、前进/后退、再次点链接）都会覆盖为新的
+  时间戳；由 per-tab 守卫识别并放行扩展自身发起的改写，不会无限重定向。
 - 🎚 **一键总开关** —— 弹窗/Sidepanel 里有开关，也可以录制一个全局组合键（如 `Ctrl+Shift+T`），
   在任意网页上随时切换，右上角浮出状态提示。
 - 💾 **自动保存** —— 配置存于 `browser.storage`，跨设备（登录同步时）保留。
@@ -86,7 +87,7 @@ mise run sign           # 上传 AMO 签名，需 WEB_EXT_API_KEY / WEB_EXT_API_
 3. 页面命中规则后，导航会自动变成 `https://api.example.com/v1/users?t=1735689600000`。
 4. 想临时关掉时，用弹窗里的开关，或在设置页录制一个 **开关切换快捷键**。
 
-> `t` 参数名固定；已带 `t` 的 URL 不会被再次改写。
+> `t` 参数名固定；每次导航（含刷新、前进/后退）都会覆盖为当前时间戳。
 
 ## 工作原理
 
@@ -97,11 +98,12 @@ webNavigation.onBeforeNavigate (frameId === 0)
         ├─ 等待 storage 就绪
         ├─ 总开关关闭？→ 结束
         ├─ hostname 命中任一正则？
-        └─ 未带 t 参数？→ tabs.update(追加 ?t=Date.now())
+        ├─ 该 URL 是我们刚写入的？→ 放行（防循环）
+        └─ 否则 → tabs.update(覆盖 ?t=Date.now())
 ```
 
-核心改写逻辑是纯函数 `appendTimestamp()`（`src/logic/timestamp.ts`），不依赖浏览器 API，
-因此可以完整单测。
+核心改写逻辑是纯函数 `appendTimestamp()`（`src/logic/timestamp.ts`），防循环守卫是
+`createRewriteGuard()`（`src/logic/rewriteGuard.ts`），都不依赖浏览器 API，因此可以完整单测。
 
 ## 开发
 

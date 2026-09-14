@@ -12,8 +12,12 @@ export function isValidRegex(pattern: string): boolean {
 }
 
 /**
- * 若 URL 命中任一域名正则且尚未带 t 参数，返回追加了 ?t={{当前时间戳}} 的新 URL；
- * 否则返回 null（不需要改写）。
+ * 若 URL 命中任一域名正则，返回把 `t` 参数重置为 `now` 的新 URL；
+ * 未命中、协议不支持或 URL 非法时返回 null（不需要改写）。
+ *
+ * 注意：这里**不会**因为「已带 t 参数」而跳过——刷新、前进/后退、再次点击链接时
+ * 必须写入新的时间戳，否则会命中上一次导航留下的缓存。防重定向循环由调用方
+ * （background 的 per-tab 守卫）负责，而不是靠不碰已带参的 URL。
  */
 export function appendTimestamp(url: string, patterns: string[], now: number = Date.now()): string | null {
   let u: URL
@@ -24,9 +28,6 @@ export function appendTimestamp(url: string, patterns: string[], now: number = D
     return null
   }
   if (u.protocol !== 'http:' && u.protocol !== 'https:')
-    return null
-  // 已带 t 参数则跳过，避免重定向循环
-  if (u.searchParams.has('t'))
     return null
   const hit = patterns.some((p) => {
     try {
@@ -39,6 +40,7 @@ export function appendTimestamp(url: string, patterns: string[], now: number = D
   })
   if (!hit)
     return null
+  // 覆盖旧值，保证每次导航都是新的缓存键
   u.searchParams.set('t', String(now))
   return u.toString()
 }
