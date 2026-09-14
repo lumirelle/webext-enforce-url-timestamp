@@ -8,7 +8,7 @@ describe('logo component', () => {
 
     const img = wrapper.find('img')
     expect(img.exists()).toBe(true)
-    expect(img.attributes('alt')).toBe('时印 TimeSeal')
+    expect(img.attributes('alt')).toBe('TimeSeal')
 
     expect(wrapper.find('a').attributes('href')).toContain('webext-enforce-url-timestamp')
   })

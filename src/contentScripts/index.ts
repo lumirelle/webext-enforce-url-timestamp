@@ -2,7 +2,7 @@ import { sendMessage } from 'webext-bridge/content-script'
 import { comboEquals, comboFromKeyboardEvent } from '~/logic/shortcut'
 import { settings } from '~/logic/storage'
 
-// 轻量 toast：显示切换后的开关状态，1.8s 后消失
+// Lightweight toast: shows the switch state after toggling, disappears after 1.8s
 function showToast(text: string) {
   const el = document.createElement('div')
   el.textContent = text
@@ -47,7 +47,7 @@ window.addEventListener(
     const configured = settings.value.shortcut
     if (!configured || !comboEquals(combo, configured))
       return
-    // 不校验 enabled：开关被关掉时快捷键必须仍然可用
+    // Don't check `enabled`: the shortcut must keep working even when the switch is off
     if (isEditable(e.target))
       return
     e.preventDefault()
@@ -55,7 +55,7 @@ window.addEventListener(
     void (async () => {
       try {
         const enabled = await sendMessage('toggle-enabled', null)
-        showToast(enabled ? '时印 · 时间戳已开启' : '时印 · 时间戳已关闭')
+        showToast(enabled ? 'TimeSeal · Timestamp enabled' : 'TimeSeal · Timestamp disabled')
       }
       catch (err) {
         // oxlint-disable-next-line no-console

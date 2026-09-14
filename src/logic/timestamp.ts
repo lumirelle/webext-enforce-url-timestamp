@@ -1,6 +1,6 @@
-/** URL 时间戳改写的纯逻辑（无浏览器 API 依赖，可单测） */
+/** Pure logic for URL timestamp rewriting (no browser API dependency, unit-testable) */
 
-/** 校验正则是否合法 */
+/** Validate whether a regex is legal */
 export function isValidRegex(pattern: string): boolean {
   try {
     void new RegExp(pattern)
@@ -12,12 +12,15 @@ export function isValidRegex(pattern: string): boolean {
 }
 
 /**
- * 若 URL 命中任一域名正则，返回把 `t` 参数重置为 `now` 的新 URL；
- * 未命中、协议不支持或 URL 非法时返回 null（不需要改写）。
+ * If the URL matches any domain regex, return a new URL with the `t` parameter
+ * reset to `now`; return null (no rewrite needed) when nothing matches, the
+ * protocol is unsupported, or the URL is invalid.
  *
- * 注意：这里**不会**因为「已带 t 参数」而跳过——刷新、前进/后退、再次点击链接时
- * 必须写入新的时间戳，否则会命中上一次导航留下的缓存。防重定向循环由调用方
- * （background 的 per-tab 守卫）负责，而不是靠不碰已带参的 URL。
+ * Note: this does **not** skip URLs that already carry a `t` parameter -- refresh,
+ * back/forward and clicking a link again must write a new timestamp, otherwise the
+ * cache left by the previous navigation would be hit. Avoiding redirect loops is
+ * the caller's job (the per-tab guard in background), not a matter of leaving
+ * already-parameterized URLs alone.
  */
 export function appendTimestamp(url: string, patterns: string[], now: number = Date.now()): string | null {
   let u: URL
@@ -40,7 +43,7 @@ export function appendTimestamp(url: string, patterns: string[], now: number = D
   })
   if (!hit)
     return null
-  // 覆盖旧值，保证每次导航都是新的缓存键
+  // Overwrite the old value so every navigation gets a fresh cache key
   u.searchParams.set('t', String(now))
   return u.toString()
 }

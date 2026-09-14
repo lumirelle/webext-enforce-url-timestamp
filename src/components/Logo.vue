@@ -10,11 +10,11 @@ withDefaults(defineProps<{ size?: number }>(), { size: 48 })
     rel="noreferrer"
     href="https://github.com/lumirelle/webext-enforce-url-timestamp"
     target="_blank"
-    title="时印 TimeSeal · GitHub"
+    title="TimeSeal · GitHub"
   >
     <img
       :src="logo"
-      alt="时印 TimeSeal"
+      alt="TimeSeal"
       :width="size"
       :height="size"
       class="rounded-lg"

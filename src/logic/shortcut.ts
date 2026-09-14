@@ -1,9 +1,9 @@
-/** 快捷键统一表示：'Ctrl+Shift+T'（修饰键顺序固定 Ctrl,Alt,Shift,Meta，键名大写） */
+/** Canonical shortcut representation: 'Ctrl+Shift+T' (modifier order fixed as Ctrl,Alt,Shift,Meta, key names uppercase) */
 
 const MODIFIER_KEYS = new Set(['Control', 'Alt', 'Shift', 'Meta'])
 
 function keyName(e: KeyboardEvent): string {
-  // 用 code 归一化，避免不同键盘布局/Shift 影响：KeyT -> T, Digit1 -> 1
+  // Normalize via `code` so keyboard layout / Shift don't interfere: KeyT -> T, Digit1 -> 1
   let m = /^Key([A-Z])$/.exec(e.code)
   if (m?.[1])
     return m[1]
@@ -35,11 +35,11 @@ function keyName(e: KeyboardEvent): string {
   }
   if (special[e.code] !== undefined)
     return special[e.code]!
-  // 兜底：可打印字符取 e.key
+  // Fallback: use e.key for printable characters
   return e.key.length === 1 ? e.key.toUpperCase() : e.key
 }
 
-/** 从键盘事件解析组合键字符串；纯修饰键按下返回 null */
+/** Parse a combo string from a keyboard event; returns null for modifier-only presses */
 export function comboFromKeyboardEvent(e: KeyboardEvent): string | null {
   if (MODIFIER_KEYS.has(e.key))
     return null
@@ -56,7 +56,7 @@ export function comboFromKeyboardEvent(e: KeyboardEvent): string | null {
   return parts.join('+')
 }
 
-/** 大小写不敏感地比较两个组合键字符串 */
+/** Compare two combo strings case-insensitively */
 export function comboEquals(a: string, b: string): boolean {
   return a.trim().toLowerCase() === b.trim().toLowerCase() && a.trim() !== ''
 }

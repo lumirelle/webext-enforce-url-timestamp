@@ -11,7 +11,7 @@ if (import.meta.hot) {
   void import('./contentScriptHMR')
 }
 
-// 记录每个标签页最近一次由本扩展写入的 URL，用于打断重定向循环
+// Track the last URL this extension wrote for each tab, to break redirect loops
 const selfRewrites = createRewriteGuard()
 
 browser.runtime.onInstalled.addListener((): void => {
@@ -23,19 +23,22 @@ browser.tabs.onRemoved.addListener((tabId) => {
   selfRewrites.forget(tabId)
 })
 
-// 主框架导航前：命中域名正则则强制跳转到带最新 `?t=` 时间戳的 URL。
-// 刷新（F5）、前进/后退、再次点击链接都会重新经过这里，因此时间戳始终是新的。
+// Before a main-frame navigation: if the domain matches a regex, force a jump to
+// the URL carrying the freshest `?t=` timestamp. Refresh (F5), back/forward and
+// clicking a link again all pass through here, so the timestamp is always new.
 browser.webNavigation.onBeforeNavigate.addListener(async ({ tabId, frameId, url }) => {
   if (frameId !== 0)
     return
-  // 同步消费守卫：这次导航正是我们上一次 tabs.update 的结果，放行以免死循环。
-  // 必须在任何 await 之前消费，避免并发导航时把守卫让给别的 URL。
+  // Consume the guard synchronously: this navigation is the result of our own
+  // previous tabs.update, so let it through to avoid an infinite loop. It must be
+  // consumed before any await so concurrent navigations can't steal the guard.
   if (selfRewrites.consume(tabId, url))
     return
   if (isForbiddenUrl(url))
     return
-  // service worker 冷启动时 storage 是异步读取的，必须等配置就绪，
-  // 否则首次导航会读到空的 patterns 而被跳过
+  // On a cold service-worker start storage is read asynchronously, so wait until
+  // the config is ready, otherwise the first navigation sees empty patterns and
+  // is skipped
   await settingsReady
   if (!settings.value.enabled)
     return
@@ -47,12 +50,13 @@ browser.webNavigation.onBeforeNavigate.addListener(async ({ tabId, frameId, url 
     await browser.tabs.update(tabId, { url: newUrl })
   }
   catch {
-    // 标签页可能已关闭，或该 URL 无法导航；清掉守卫避免误伤下一次导航
+    // The tab may be closed, or the URL can't be navigated; drop the guard so it
+    // doesn't affect the next navigation
     selfRewrites.forget(tabId)
   }
 })
 
-// 内容脚本的快捷键触发：切换总开关，返回切换后的状态
+// Shortcut trigger from the content script: toggle the master switch, return the new state
 onMessage('toggle-enabled', async () => {
   settings.value = { ...settings.value, enabled: !settings.value.enabled }
   return settings.value.enabled

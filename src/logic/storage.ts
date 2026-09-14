@@ -1,11 +1,11 @@
 import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
 
 export interface TimestampSettings {
-  /** 总开关：关闭后不追加时间戳 */
+  /** Master switch: when off, no timestamp is appended */
   enabled: boolean
-  /** 域名正则列表（对 URL 的 hostname 做匹配） */
+  /** Domain regex list (matched against the URL's hostname) */
   patterns: string[]
-  /** 开关切换快捷键，如 "Ctrl+Shift+T"，空字符串表示未设置 */
+  /** Toggle shortcut, e.g. "Ctrl+Shift+T"; an empty string means unset */
   shortcut: string
 }
 

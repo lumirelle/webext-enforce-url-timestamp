@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createRewriteGuard } from '../logic/rewriteGuard'
 
 describe('createRewriteGuard', () => {
-  it('只放行刚刚写入的那个 URL', () => {
+  it('only lets through the URL that was just written', () => {
     const guard = createRewriteGuard()
     guard.remember(1, 'https://a.com/?t=1')
 
@@ -10,16 +10,16 @@ describe('createRewriteGuard', () => {
     expect(guard.consume(1, 'https://a.com/other')).toBe(false)
   })
 
-  it('消费一次后失效，用户再次刷新仍会被改写', () => {
+  it('expires after one consume, so a user refresh is still rewritten', () => {
     const guard = createRewriteGuard()
     guard.remember(1, 'https://a.com/?t=1')
 
     expect(guard.consume(1, 'https://a.com/?t=1')).toBe(true)
-    // 同一个 URL 再次出现（用户按 F5）时不应被当作自我改写而跳过
+    // The same URL appearing again (user presses F5) must not be skipped as a self-rewrite
     expect(guard.consume(1, 'https://a.com/?t=1')).toBe(false)
   })
 
-  it('各标签页互不影响', () => {
+  it('tabs do not affect each other', () => {
     const guard = createRewriteGuard()
     guard.remember(1, 'https://a.com/?t=1')
 
@@ -27,7 +27,7 @@ describe('createRewriteGuard', () => {
     expect(guard.consume(1, 'https://a.com/?t=1')).toBe(true)
   })
 
-  it('remember 会覆盖同一标签页的旧记录', () => {
+  it('remember overwrites the previous record for the same tab', () => {
     const guard = createRewriteGuard()
     guard.remember(1, 'https://a.com/?t=1')
     guard.remember(1, 'https://a.com/?t=2')
@@ -36,7 +36,7 @@ describe('createRewriteGuard', () => {
     expect(guard.consume(1, 'https://a.com/?t=2')).toBe(true)
   })
 
-  it('forget 清除记录', () => {
+  it('forget clears the record', () => {
     const guard = createRewriteGuard()
     guard.remember(1, 'https://a.com/?t=1')
     guard.forget(1)
